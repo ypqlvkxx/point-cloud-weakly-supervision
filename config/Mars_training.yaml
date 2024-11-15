@@ -1,0 +1,77 @@
+model:
+  in_feat: 66
+  hid_feat: 32
+  num_layers: 4
+  numclass: 18
+  num_points: &num_points 8192 * 5    # Number of input points
+  sub_grid_size : 0.06  # preprocess_parameter
+  train_steps: 500  # Number of steps per epochs
+  val_steps: 100  # Number of validation steps per epoch
+
+  d_out : [16, 64, 128, 256]  # feature dimension
+  rep_d_out : [16, 64, 128, 256]  # feature dimension
+
+  noise_init: 3.5  # noise initial parameter
+  max_epoch: 100  # maximum epoch during training
+  learning_rate: 0.01  # initial learning rate
+  #lr_decays : {i: 0.95 for i in range(0, 500)}  # decay rate of learning rate
+
+  train_sum_dir : 'train_log'
+  saving : True
+  saving_path : None
+  
+
+dataset:
+  root_dir: '/data'
+  prefix: Mars_mt
+  numclass: 18
+  aug:
+    full: ['rotate', 'flip', 'scale', 'noise']
+  num_layers: 4
+  k_n : 32  # KNN
+  sub_sampling_ratio: [4, 4, 4, 4]  # sampling ratio of random sampling at each layer
+
+U2PL:
+  temperature: 0.1
+  num_queries: 50
+  num_negatives: 256
+
+train_dataloader:
+  batch_size: 6
+  shuffle: True
+  num_workers: 4
+  pin_memory: True
+
+
+val_dataloader:
+  batch_size: 2
+  shuffle: False
+  num_workers: 4
+  pin_memory: True
+
+test_dataloader:
+  batch_size: 2
+  shuffle: False
+  num_workers: 4
+  pin_memory: True
+
+
+trainer:
+  max_epochs: 450
+  gpus: -1
+  check_val_every_n_epoch: 1
+  default_root_dir: 'output'
+  accelerator: 'ddp'
+  sync_batchnorm: True
+  accumulate_grad_batches: 2
+  num_sanity_val_steps: 1
+
+optimizer:
+  lr: 0.001
+
+logger:
+  project: 'weak'
+  name: 'weak'
+
+checkpoint:
+  path: None
